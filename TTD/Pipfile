@@ -6,6 +6,13 @@ name = "pypi"
 [packages]
 twitchio = "*"
 python-binance = "*"
+dash = "*"
+plotly = "*"
+dash-core-components = "*"
+pyorbital = "*"
+pandas = "*"
+xlrd = "*"
+"plotly.express" = "*"
 
 [dev-packages]
 
