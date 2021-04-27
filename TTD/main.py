@@ -31,9 +31,17 @@ async def event_message(ctx):
     await bot.handle_commands(ctx)
 
 
-@bot.command(name='test')
+@bot.command(name='buy')
 async def test(ctx):
-    await ctx.send('test PASSED!')
+    await ctx.send('BUY')
+
+@bot.command(name='hold')
+async def test(ctx):
+    await ctx.send('HOLD')
+
+@bot.command(name='sell')
+async def test(ctx):
+    await ctx.send('SELL')
 
 
 
