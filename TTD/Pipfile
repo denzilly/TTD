@@ -13,6 +13,8 @@ pyorbital = "*"
 pandas = "*"
 xlrd = "*"
 "plotly.express" = "*"
+redis = "*"
+dash-daq = "*"
 
 [dev-packages]
 

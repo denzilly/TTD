@@ -1,7 +1,7 @@
 import os
 from twitchio.ext import commands
 
-from trader import buy, sell, check_bal
+#from trader import buy, sell, check_bal
 from helpers import vote_cache
 
 
@@ -12,8 +12,11 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import random
 import pandas as pd
+import redis
 
 
+
+r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
 
 bot = commands.Bot(
     # set up the bot
@@ -24,7 +27,7 @@ bot = commands.Bot(
     initial_channels=[os.environ['CHANNEL']]
 )
 
-
+r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
 @bot.event
 async def event_ready():
         'called on wakeup'
@@ -47,73 +50,29 @@ async def event_message(ctx):
 
 @bot.command(name='buy')
 async def test(ctx):
-    buy(check_bal())
+    #buy(check_bal())
+    
+    r.rpush('buy', ctx.author.name.lower())
+    r.rpush('votes', ctx.author.name.lower())
+    print("BUY!")
     await ctx.send('BUY')
 
 @bot.command(name='hold')
 async def test(ctx):
-
+    r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
+    r.rpush('hold', ctx.author.name.lower())
+    r.rpush('votes', ctx.author.name.lower())
+    print("HOLD")
     await ctx.send('HOLD')
 
 @bot.command(name='sell')
 async def test(ctx):
-    sell(check_bal())
+    r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
+    #sell(check_bal())
+    r.rpush('sell', ctx.author.name.lower())
+    r.rpush('votes', ctx.author.name.lower())
+    print("SELL")
     await ctx.send('SELL')
-
-
-
-
-async def run_dash():
-    app = dash.Dash(__name__)
-
-    app.layout = html.Div([
-        dcc.Graph(id="bar-chart"),
-        dcc.Interval(
-                id='interval-component',
-                interval=5*1000, # in milliseconds
-                n_intervals=0
-            )
-    ])
-
-
-
-
-    @app.callback(
-        Output("bar-chart", "figure"), 
-        [Input("interval-component", "n_intervals")])
-    def update_bar_chart(day):
-        
-        data = [["buy", random.randint(10,20)], ["sell", random.randint(5,10)]]
-        df = pd.DataFrame(data, columns=['Action', 'Count'])
-        
-
-
-        fig = px.bar(df, x="Action", y="Count")
-        return fig
-
-    app.run_server(debug=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -126,4 +85,4 @@ async def run_dash():
 # bot.py
 if __name__ == "__main__":
     bot.run()
-    #app.run_server(debug=True)
+    
