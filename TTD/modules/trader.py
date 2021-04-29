@@ -46,34 +46,4 @@ def sell(bal):
 
 
 
-
-
-
-
-
-#TEST LOOP
-
-side = "dfg"
-
-# while(True):
-
-
-#     BTC_bal = client.get_asset_balance(asset='BTC')['free']
-#     USDT_bal = client.get_asset_balance(asset='uSDT')['free']
-
-#     pif(["Current Balance:","BTC :" + BTC_bal, "USDT :" + USDT_bal])
-
-#     if (side == "BUY"):
-#         buy(check_bal())
-#     if side == "SELL":
-#         sell(check_bal())
-
-
-#     side = input("what do you want to do?")
-#     if side == "break":
-#         break
-
-#     time.sleep(2)
-
-    
-#     #print(client.get_aggregate_trades(symbol='BTCUSDT'))
+print("there")

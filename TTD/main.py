@@ -2,7 +2,7 @@ import os
 from twitchio.ext import commands
 
 #from trader import buy, sell, check_bal
-from helpers import vote_cache
+from modules.helpers import vote_cache
 
 
 import dash
@@ -61,7 +61,7 @@ async def test(ctx):
 async def test(ctx):
     r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
     r.rpush('hold', ctx.author.name.lower())
-    r.rpush('votes', ctx.author.name.lower())
+    #r.rpush('votes', ctx.author.name.lower())
     print("HOLD")
     await ctx.send('HOLD')
 
@@ -70,7 +70,7 @@ async def test(ctx):
     r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
     #sell(check_bal())
     r.rpush('sell', ctx.author.name.lower())
-    r.rpush('votes', ctx.author.name.lower())
+    #r.rpush('votes', ctx.author.name.lower())
     print("SELL")
     await ctx.send('SELL')
 

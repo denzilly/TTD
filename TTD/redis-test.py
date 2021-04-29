@@ -1,5 +1,6 @@
 import redis
 import datetime as dt
+import time
 r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
 
 
@@ -11,7 +12,6 @@ r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
 # else:
 #     print(r.get("asdfs"))
 
-
-buyvotes = len(r.lrange("buy",0,-1))
-print(r.lrange('buy',0,-1))
-print(buyvotes)
+while 1:
+    print(r.lrange("buy",0,-1))
+    time.sleep(3)
