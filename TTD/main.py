@@ -13,15 +13,19 @@ import plotly.express as px
 import random
 import pandas as pd
 import redis
+import asyncio
 
 
 
 r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
 
+
+
 bot = commands.Bot(
     # set up the bot
     irc_token=os.environ['TMI_TOKEN'],
     client_id=os.environ['CLIENT_ID'],
+    client_secret=os.environ['CLIENT_SECRET'],
     nick=os.environ['BOT_NICK'],
     prefix=os.environ['BOT_PREFIX'],
     initial_channels=[os.environ['CHANNEL']]
@@ -33,19 +37,33 @@ async def event_ready():
         'called on wakeup'
         print(f"{os.environ['BOT_NICK']} is online!")
         ws = bot._ws
-        
+        bot.loop.create_task(get_stream_info())
         await ws.send_privmsg(os.environ['CHANNEL'], f"/me has landed!")
 
 
 
-@bot.event
-async def event_message(ctx):
-    'Runs every time a message is sent in chat.'
+async def get_stream_info():
+    r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
+    while 1:    
+        stream_info = await bot.get_stream("twitchtradesdoge")
+        r.set("viewer_count",stream_info['viewer_count'])
+        print(f'current viewers: {stream_info["viewer_count"]}')
+        await asyncio.sleep(10)
 
-    # make sure the bot ignores itself and the streamer
-    if ctx.author.name.lower() == os.environ['BOT_NICK'].lower():
-        return
-    await bot.handle_commands(ctx)
+
+    
+
+
+
+
+# @bot.event
+# async def event_message(ctx):
+#     'Runs every time a message is sent in chat.'
+
+#     # make sure the bot ignores itself and the streamer
+#     if ctx.author.name.lower() == os.environ['BOT_NICK'].lower():
+#         return
+#     await bot.handle_commands(ctx)
 
 
 @bot.command(name='buy')
@@ -56,6 +74,18 @@ async def test(ctx):
     r.rpush('votes', ctx.author.name.lower())
     print("BUY!")
     await ctx.send('BUY')
+
+@bot.command(name='buy12')
+async def test(ctx):
+    #buy(check_bal())
+    for x in range(12):
+        r.rpush('buy', ctx.author.name.lower())
+        r.rpush('votes', ctx.author.name.lower())
+    print("BUY!")
+    await ctx.send('BUY')
+
+
+
 
 @bot.command(name='hold')
 async def test(ctx):
@@ -74,7 +104,15 @@ async def test(ctx):
     print("SELL")
     await ctx.send('SELL')
 
-
+@bot.command(name='sell12')
+async def test(ctx):
+    r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
+    #sell(check_bal())
+    for x in range(12):
+        r.rpush('sell', ctx.author.name.lower())
+    #r.rpush('votes', ctx.author.name.lower())
+    print("SELL")
+    await ctx.send('SELL')
 
 
 

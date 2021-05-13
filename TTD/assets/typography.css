@@ -1,0 +1,16 @@
+body {
+    font-family: fantasy;
+    background-color: #292927;
+}
+h1, h2, h3, h4, h5, h6 {
+    color: #d2ff2f;
+    font-family: "lucida console";
+    border-style: solid;
+    border-color:  #d2ff2f;
+    border-width: medium;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align:center;
+    font-size: 40px;
+
+}
