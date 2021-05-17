@@ -10,7 +10,15 @@ h1, h2, h3, h4, h5, h6 {
     border-width: medium;
     padding-left: 10px;
     padding-right: 10px;
+    padding-top: 3px;
+    padding-bottom: 3px;
     text-align:center;
-    font-size: 40px;
+    font-size: 34px;
 
+}
+
+
+mark.red {
+    color:#ff0000;
+    background: none;
 }

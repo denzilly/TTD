@@ -18,6 +18,8 @@ dash-daq = "*"
 dash-bootstrap-components = "*"
 dash-html-components = "*"
 dash-gif-component = "*"
+playsound = "*"
+simpleaudio = "*"
 
 [dev-packages]
 

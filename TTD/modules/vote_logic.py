@@ -3,12 +3,12 @@ import redis
 import math
 
 #from trader import *
-from modules.fake_trader import *
+from modules.trader import *
 
 r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
 
 
-def vote(r):
+def get_trade_direction(r):
 
     data = {}
     for key in ["buy","sell","votes","hold"]:
@@ -19,54 +19,70 @@ def vote(r):
     data['threshold'] = int(data['threshold'])
     data['viewer_count'] = int(data['viewer_count'])
 
-
-    
-
-
-
+    direction = "hold"
 
     if data['position'] == "long":
-        if (data["sell"] > data["threshold"] and data["sell"] > data["hold"]):
-            print("SELLING")
-
-            sell(det_qty(data["sell"], data['viewer_count']))
-
+        if (data["sell"] >= data["threshold"] and data["sell"] >= data["hold"]):
+            direction = "sell"        
         elif  (data["hold"] > data["threshold"]):
-            print("HOLDING")
+            direction = "hold"
         else:
-            print("Not enough votes!")
-
+            direction = "hold"
     if data['position'] == "short":
-        if (data["buy"] > data["threshold"] and data["buy"] > data["hold"]):
-            print("BUYING")
-
-            buy(det_qty(data["buy"], data['viewer_count']))
-            
+        if (data["buy"] >= data["threshold"] and data["buy"] >= data["hold"]):
+             direction = "buy"
         elif  (data["hold"] > data["threshold"]):
-            print("HOLDING")
-
+            direction = "hold"
         else:
-            print("Not enough votes!")
+            direction = "hold"
 
 
 
 
     elif data['position'] == "neutral":
         
-        if (data["buy"] > data["sell"] and data["buy"] > data["threshold"] and data["buy"] > data["hold"]):
-            print("BUYING")
-
-            buy(det_qty(data["buy"], data['viewer_count']))
-
-        if (data["sell"] > data["buy"] and data["sell"] > data["threshold"] and data["sell"] > data["hold"]):
-            print("SELLING")
+        if (data["buy"] >= data["sell"] and data["buy"] >= data["threshold"] and data["buy"] >= data["hold"]):
+            direction = "buy"
             
-            sell(det_qty(data["sell"], data['viewer_count']))
+        if (data["sell"] > data["buy"] and data["sell"] >= data["threshold"] and data["sell"] >= data["hold"]):
+            direction = "sell"
 
-        elif  (data["hold"] > data["threshold"]):
-            print("HOLDING")
-        else:
-            print("Not enough votes!")
+        
+
+
+    return direction,data
+
+
+
+def trade(r):
+    direction, data = get_trade_direction(r)
+
+    if direction == "buy":
+        buy(det_qty(data["buy"], data['viewer_count']), realtrade=True)
+        print("BUY BUY BUY")
+        r.set("popup", "open")
+
+    elif direction == "sell":
+        sell(det_qty(data["sell"], data['viewer_count']), realtrade=True)
+        print("SELL SELL SELL")
+        r.set("popup", "open")
+
+    else:
+        print("Holding")
+
+
+def get_nexttrade(r):
+    direction, data = get_trade_direction(r)
+    
+    if direction == "buy":
+        buy(det_qty(data["buy"], data['viewer_count']), realtrade=False)
+        
+    elif direction == "sell":
+        sell(det_qty(data["sell"], data['viewer_count']), realtrade=False)
+        
+    else:
+        r.set("nexttrade", "HOLD")
+
 
 
 
@@ -92,7 +108,6 @@ def det_qty(direction,viewers):
         qty_pct = ( ( ( direction / viewers ) - 0.1 ) * 2) 
     else:
         qty_pct = ((direction - 10) * .02)
-
 
     if qty_pct > 1:
         qty_pct = 1

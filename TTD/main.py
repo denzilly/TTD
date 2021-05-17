@@ -2,7 +2,7 @@ import os
 from twitchio.ext import commands
 
 #from trader import buy, sell, check_bal
-from modules.helpers import vote_cache
+
 
 
 import dash
@@ -51,11 +51,6 @@ async def get_stream_info():
         await asyncio.sleep(10)
 
 
-    
-
-
-
-
 # @bot.event
 # async def event_message(ctx):
 #     'Runs every time a message is sent in chat.'
@@ -69,20 +64,34 @@ async def get_stream_info():
 @bot.command(name='buy')
 async def test(ctx):
     #buy(check_bal())
-    
-    r.rpush('buy', ctx.author.name.lower())
-    r.rpush('votes', ctx.author.name.lower())
-    print("BUY!")
-    await ctx.send('BUY')
+    if r.get("position") != "long":
+        r.rpush('buy', ctx.author.name.lower())
+        r.rpush('votes', ctx.author.name.lower())
+        r.set("recent_voter",ctx.author.name.lower()+" buy")
+        print("BUY!")
+        await ctx.send('BUY')
+
+    else:
+        print("Cannot buy, below minimum USDT Balance")
+        await ctx.send("Cannot buy, below minimum USDT Balance")
+
 
 @bot.command(name='buy12')
 async def test(ctx):
-    #buy(check_bal())
-    for x in range(12):
-        r.rpush('buy', ctx.author.name.lower())
-        r.rpush('votes', ctx.author.name.lower())
-    print("BUY!")
-    await ctx.send('BUY')
+    r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
+    #sell(check_bal())
+    if r.get("position") != "long":
+        for x in range(12):
+            r.rpush('buy', ctx.author.name.lower())
+            r.rpush('votes', ctx.author.name.lower())
+        print("BUY")
+        r.set("recent_voter",ctx.author.name.lower()+" buy")
+        await ctx.send('BUY')
+    else:
+        print("Cannot buy, below minimum USDT Balance")
+        await ctx.send("Cannot buy, below minimum USDT Balance")
+
+
 
 
 
@@ -91,29 +100,58 @@ async def test(ctx):
 async def test(ctx):
     r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
     r.rpush('hold', ctx.author.name.lower())
-    #r.rpush('votes', ctx.author.name.lower())
+    r.set("recent_voter",ctx.author.name.lower())
+    r.rpush('votes', ctx.author.name.lower()+" hold")
     print("HOLD")
     await ctx.send('HOLD')
+
+
+@bot.command(name='hold12')
+async def test(ctx):
+    r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
+    #sell(check_bal())
+    for x in range(12):
+        r.rpush('hold', ctx.author.name.lower())
+        r.rpush('votes', ctx.author.name.lower())
+    r.set("recent_voter",ctx.author.name.lower()+" hold")
+    print("HOLD")
+    await ctx.send('HOLD')
+
+
+
+
 
 @bot.command(name='sell')
 async def test(ctx):
     r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
     #sell(check_bal())
-    r.rpush('sell', ctx.author.name.lower())
-    #r.rpush('votes', ctx.author.name.lower())
-    print("SELL")
-    await ctx.send('SELL')
+    if r.get("position") != "short":
+        r.rpush('sell', ctx.author.name.lower())
+        r.rpush('votes', ctx.author.name.lower())
+        r.set("recent_voter",ctx.author.name.lower()+" sell")
+        print("SELL")
+        await ctx.send('SELL')
+
+    else:
+        print("Cannot sell, below minimum DOGE Balance")
+        await ctx.send("Cannot sell, below minimum DOGE Balance")
+
 
 @bot.command(name='sell12')
 async def test(ctx):
     r = redis.Redis('localhost', charset="utf-8", decode_responses=True)
     #sell(check_bal())
-    for x in range(12):
-        r.rpush('sell', ctx.author.name.lower())
+    if r.get("position") != "short":
+        for x in range(12):
+            r.rpush('sell', ctx.author.name.lower())
+        print("SELL")
+        r.set("recent_voter",ctx.author.name.lower()+" sell")
+        await ctx.send('SELL')
+    else:
+        print("Cannot sell, below minimum DOGE Balance")
+        await ctx.send("Cannot sell, below minimum DOGE Balance")
     #r.rpush('votes', ctx.author.name.lower())
-    print("SELL")
-    await ctx.send('SELL')
-
+    
 
 
 

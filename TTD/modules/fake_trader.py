@@ -19,7 +19,7 @@ def check_bal():
 
 
 
-def buy(qty_pct):
+def buy(qty_pct,realtrade):
     #real buy logic
 
 
@@ -43,21 +43,26 @@ def buy(qty_pct):
         print("might as well just do all of it..")
         remaining_u_u = ( data['usdtbal'] - buy_u )
         remaining_d_d = ( data['dogebal'] + buy_d)
-        r.set("position","long")
+        if realtrade:
+            r.set("position","long")
     
     
-    print(f" buy percentage = {qty_pct}")
-    print(f"balance is {data['dogebal']} DOGE")
-    print(f"buying {buy_d} DOGE @ {price} = {buy_u} USDT")
-
-    r.set("dogebal", remaining_d_d )
-    r.set("usdtbal",  remaining_u_u )
-
-
     
 
+    if  realtrade:
+        print(f" buy percentage = {qty_pct}")
+        print(f"balance is {data['dogebal']} DOGE")
+        print(f"buying {buy_d} DOGE @ {price} = {buy_u} USDT")
 
-def sell(qty_pct):
+        r.set("dogebal", remaining_d_d )
+        r.set("usdtbal",  remaining_u_u )
+
+    r.set("nexttrade", f"Buy {round(buy_d,2)} DOGE")
+
+
+
+
+def sell(qty_pct,realtrade):
     #real sell logic
 
     #fake sell logic
@@ -79,15 +84,18 @@ def sell(qty_pct):
         print("might as well just do all of it..")
         remaining_d_u = ( data['dogebal'] - sell_d ) * price 
         remaining_u_u = ( data['usdtbal'] + sell_u)
-        r.set("position","short")
+        if realtrade:
+            r.set("position","short")
     
-    
-    print(f" sell percentage = {qty_pct}")
-    print(f"balance is {data['dogebal']} DOGE")
-    print(f"selling {sell_d} DOGE @ {price} = {sell_u} USDT")
 
-    r.set("dogebal", remaining_d_u / price )
-    r.set("usdtbal",  remaining_u_u )
+    if realtrade:
+        print(f" sell percentage = {qty_pct}")
+        print(f"balance is {data['dogebal']} DOGE")
+        print(f"selling {sell_d} DOGE @ {price} = {sell_u} USDT")
 
+        r.set("dogebal", remaining_d_u / price )
+        r.set("usdtbal",  remaining_u_u )
+
+    r.set("nexttrade", f"Sell {round(sell_d,2)} DOGE")
 
 

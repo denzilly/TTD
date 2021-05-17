@@ -1,6 +1,9 @@
 from datetime import date
 import csv
 
+from modules.vote_logic import det_qty
+
+
 def get_trade_keys():
     keys = ["symbol", "price", "origQty", "executedQty", "type", "side", "fills"]
     return keys
@@ -58,36 +61,11 @@ def log_trade(trade, keys):
         print("trade was logged")
 
 
+#find longest list in a list of lists
+def longest_list(l):
+    longest = 0
+    for x in l:
+        if len(l) > longest:
+            longest = l
 
 
-class vote_cache:
-    def __init__(self, buy_votes, sell_votes, hold_votes, state):
-        self.buy_votes = 0
-        self.sell_votes = 0
-        self.hold_votes = 0
-        self.state = "short"
-
-
-
-    def add_vote(self, vote_type):
-        if vote_type == "buy":
-            self.buy_votes += 1
-        if vote_type == "sell":
-            self.sell_votes += 1
-        if vote_type == "hold":
-            self.hold_votes += 1
-
-    
-    def clear_votes(self):
-        self.buy_votes = 0
-        self.sell_votes = 0
-        self.hold_votes = 0
-
-
-# class Wallet:
-#     def __init__(self, doge_bal, usdt_bal):
-#         self.doge_bal = doge_bal
-#         self.usdt_bal = usdt_bal
-
-#     def check(self):
-#         pif(["USDT Balance: " + self.usdt_bal, "DOGE Balance: " + self.doge_bal ])
